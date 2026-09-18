@@ -85,6 +85,16 @@ builder.Services.AddScoped<OfficialAnnouncementService>();
 builder.Services.AddScoped<PointOfInterestService>();
 builder.Services.AddScoped<ExternalNewsService>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("SmartCityClient", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>() ?? new JwtSettings();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -113,6 +123,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("SmartCityClient");
 
 app.UseAuthentication();
 app.UseAuthorization();

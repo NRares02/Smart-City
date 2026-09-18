@@ -8,6 +8,7 @@ function Header() {
         <NavLink to="/" end>
           Home
         </NavLink>
+        <NavLink to="/auth">Sign In</NavLink>
       </nav>
     </header>
   );
