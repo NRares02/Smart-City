@@ -20,6 +20,7 @@ public class PointsOfInterestController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAll()
     {
         var pointsOfInterest = await _pointOfInterestService.GetActiveAsync();
@@ -28,6 +29,7 @@ public class PointsOfInterestController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetById(string id)
     {
         var pointOfInterest = await _pointOfInterestService.GetByIdAsync(id);
@@ -40,6 +42,7 @@ public class PointsOfInterestController : ControllerBase
     }
 
     [HttpGet("category/{categoryId}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetByCategoryId(string categoryId)
     {
         var pointsOfInterest = await _pointOfInterestService.GetByCategoryIdAsync(categoryId);

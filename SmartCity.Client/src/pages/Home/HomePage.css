@@ -559,54 +559,10 @@ html {
 
 .explore-city__visual {
   position: relative;
-  height: 320px;
-  border-radius: 22px;
-  overflow: hidden;
-  background: linear-gradient(160deg, #eef5fb 0%, #e3edf7 100%);
-  border: 1px dashed #cfe0ef;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  color: #2381c4;
 }
 
-.explore-city__grid {
-  position: absolute;
-  inset: 0;
-  background-image: linear-gradient(#d7e6f4 1px, transparent 1px),
-    linear-gradient(90deg, #d7e6f4 1px, transparent 1px);
-  background-size: 34px 34px;
-  opacity: 0.6;
-}
-
-.explore-city__pin {
-  position: relative;
-  z-index: 1;
-}
-
-.explore-city__pin--sm {
-  position: absolute;
-  opacity: 0.7;
-}
-
-.explore-city__pin--a {
-  top: 26%;
-  left: 26%;
-}
-
-.explore-city__pin--b {
-  top: 62%;
-  left: 68%;
-}
-
-.explore-city__visual p {
-  position: relative;
-  z-index: 1;
-  margin: 0;
-  font-weight: 600;
-  font-size: 0.9rem;
+.explore-city__map {
+  width: 100%;
 }
 
 /* ===== News + announcements ===== */

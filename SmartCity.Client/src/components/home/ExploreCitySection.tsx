@@ -1,8 +1,10 @@
 import { useNavigate } from 'react-router-dom';
-import { MapPinIcon } from '../dashboard/icons';
+import CityMap, { BUCHAREST_CENTER } from '../map/CityMap';
+import { usePointsOfInterest } from '../../hooks/usePointsOfInterest';
 
 function ExploreCitySection() {
   const navigate = useNavigate();
+  const { pointsOfInterest, categories, isLoading, error } = usePointsOfInterest();
 
   return (
     <section id="explore" className="explore-city">
@@ -19,11 +21,15 @@ function ExploreCitySection() {
       </div>
 
       <div className="explore-city__visual">
-        <div className="explore-city__grid" aria-hidden="true" />
-        <MapPinIcon size={40} className="explore-city__pin" />
-        <MapPinIcon size={24} className="explore-city__pin explore-city__pin--sm explore-city__pin--a" />
-        <MapPinIcon size={24} className="explore-city__pin explore-city__pin--sm explore-city__pin--b" />
-        <p>Interactive city map coming soon</p>
+        <CityMap
+          className="explore-city__map"
+          compact
+          pointsOfInterest={pointsOfInterest}
+          categories={categories}
+          center={BUCHAREST_CENTER}
+          isLoading={isLoading}
+          errorMessage={error}
+        />
       </div>
     </section>
   );

@@ -18,6 +18,7 @@ public class PointOfInterestCategoriesController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetActive()
     {
         var categories = await _pointOfInterestCategoryRepository.GetActiveAsync();

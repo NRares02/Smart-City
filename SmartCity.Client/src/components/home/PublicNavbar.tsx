@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import smartCityLogo from '../../images/logo2_smartcity.png';
+import smartCityLogo from '../../images/logo_smartcity.png';
 import { isAuthenticated } from '../../utils/storage';
 import { CloseIcon, MenuIcon } from '../dashboard/icons';
 
