@@ -22,6 +22,45 @@ public class ExternalNewsService
         return await _externalNewsRepository.GetByIdAsync(id);
     }
 
+    // Used by RSS ingestion to avoid inserting duplicates (matched by external id or source url).
+    public async Task<bool> ExistsAsync(string? externalId, string? sourceUrl)
+    {
+        return await _externalNewsRepository.ExistsAsync(externalId, sourceUrl);
+    }
+
+    // Used by RSS ingestion to find the existing document and update it instead of inserting a duplicate.
+    public async Task<ExternalNews?> FindByDedupKeysAsync(string? externalId, string? sourceUrl)
+    {
+        return await _externalNewsRepository.GetByDedupKeysAsync(externalId, sourceUrl);
+    }
+
+    public async Task UpdateIngestionMetadataAsync(
+        string id,
+        string summary,
+        string category,
+        string? imageUrlIfMissing,
+        DateTime? publishedAtIfReliable)
+    {
+        await _externalNewsRepository.UpdateIngestionMetadataAsync(id, summary, category, imageUrlIfMissing, publishedAtIfReliable);
+    }
+
+    // Used only by the temporary/manual relevance-audit cleanup.
+    public async Task<List<ExternalNews>> GetAllAsync()
+    {
+        return await _externalNewsRepository.GetAllAsync();
+    }
+
+    public async Task HideManyAsync(IEnumerable<string> ids)
+    {
+        await _externalNewsRepository.HideManyAsync(ids);
+    }
+
+    // Used by RSS ingestion, which builds a fully-populated ExternalNews itself (no admin user involved).
+    public async Task<ExternalNews> CreateFromIngestionAsync(ExternalNews news)
+    {
+        return await _externalNewsRepository.CreateAsync(news);
+    }
+
     public async Task<ExternalNews> CreateAsync(
         string adminUserId,
         string externalId,

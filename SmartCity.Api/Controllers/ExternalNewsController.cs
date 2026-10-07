@@ -13,13 +13,16 @@ namespace SmartCity.Api.Controllers;
 public class ExternalNewsController : ControllerBase
 {
     private readonly ExternalNewsService _externalNewsService;
+    private readonly ExternalNewsRelevanceAuditService _relevanceAuditService;
 
-    public ExternalNewsController(ExternalNewsService externalNewsService)
+    public ExternalNewsController(ExternalNewsService externalNewsService, ExternalNewsRelevanceAuditService relevanceAuditService)
     {
         _externalNewsService = externalNewsService;
+        _relevanceAuditService = relevanceAuditService;
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetVisible()
     {
         var news = await _externalNewsService.GetVisibleAsync();
@@ -28,6 +31,7 @@ public class ExternalNewsController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetById(string id)
     {
         var news = await _externalNewsService.GetByIdAsync(id);
@@ -69,6 +73,30 @@ public class ExternalNewsController : ControllerBase
         {
             return Conflict();
         }
+    }
+
+    // TEMPORARY manual cleanup: identifies existing articles that don't match RssIngestion:RelevanceKeywords.
+    [HttpGet("relevance-audit")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetRelevanceAudit()
+    {
+        var audit = await _relevanceAuditService.GetAuditAsync();
+        return Ok(new
+        {
+            total = audit.TotalCount,
+            relevant = audit.RelevantCount,
+            irrelevant = audit.IrrelevantCount,
+            irrelevant_items = audit.IrrelevantItems.Select(ToResponse)
+        });
+    }
+
+    // TEMPORARY manual cleanup: soft-hides (is_visible=false) currently-irrelevant articles. Never deletes.
+    [HttpPost("relevance-audit/hide")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> HideIrrelevant()
+    {
+        var hiddenCount = await _relevanceAuditService.HideIrrelevantAsync();
+        return Ok(new { hidden = hiddenCount });
     }
 
     private static object ToResponse(ExternalNews news)

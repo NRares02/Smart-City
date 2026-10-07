@@ -11,20 +11,26 @@ const NAV_LINKS = [
   { href: '#about', label: 'About' },
 ];
 
-function PublicNavbar() {
+interface PublicNavbarProps {
+  // For pages with no hero image behind the nav (e.g. /news) — forces the opaque/dark-text style.
+  solid?: boolean;
+}
+
+function PublicNavbar({ solid = false }: PublicNavbarProps) {
   const navigate = useNavigate();
   const authed = isAuthenticated();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(solid);
 
   useEffect(() => {
+    if (solid) return;
     function handleScroll() {
       setIsScrolled(window.scrollY > 40);
     }
     handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [solid]);
 
   function handleNavClick() {
     setIsMenuOpen(false);

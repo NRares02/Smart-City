@@ -16,6 +16,9 @@ builder.Services.Configure<MongoDbSettings>(
 builder.Services.Configure<JwtSettings>(
     builder.Configuration.GetSection("Jwt"));
 
+builder.Services.Configure<RssIngestionSettings>(
+    builder.Configuration.GetSection("RssIngestion"));
+
 builder.Services.AddSingleton<IMongoClient>(serviceProvider =>
 {
     var settings = serviceProvider
@@ -85,6 +88,16 @@ builder.Services.AddScoped<OfficialAnnouncementService>();
 builder.Services.AddScoped<PointOfInterestService>();
 builder.Services.AddScoped<ExternalNewsService>();
 
+builder.Services.AddScoped<ExternalNewsRelevanceAuditService>();
+
+builder.Services.AddHttpClient("RssIngestion", client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(30);
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("SmartCity.Api RSS Ingestion/1.0");
+});
+builder.Services.AddScoped<RssIngestionService>();
+builder.Services.AddHostedService<RssIngestionBackgroundService>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("SmartCityClient", policy =>
@@ -114,6 +127,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var externalNewsRepository = scope.ServiceProvider.GetRequiredService<ExternalNewsRepository>();
+    await externalNewsRepository.EnsureIndexesAsync();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
