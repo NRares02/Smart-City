@@ -20,6 +20,7 @@ public class OfficialAnnouncementsController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetPublished()
     {
         var announcements = await _officialAnnouncementService.GetPublishedAsync();

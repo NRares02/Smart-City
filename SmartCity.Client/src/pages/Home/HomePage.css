@@ -678,6 +678,19 @@ html {
   color: #38a9e8;
 }
 
+.news-card__pinned {
+  display: inline-block;
+  text-transform: uppercase;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #c2410c;
+  background: rgba(234, 88, 12, 0.1);
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  margin-bottom: 0.4rem;
+}
+
 .news-card h3 {
   margin: 0.45rem 0;
   font-size: 0.95rem;

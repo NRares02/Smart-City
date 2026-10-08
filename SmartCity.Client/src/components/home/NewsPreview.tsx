@@ -1,15 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useExternalNews } from '../../hooks/useExternalNews';
+import { useOfficialAnnouncements } from '../../hooks/useOfficialAnnouncements';
 import type { ExternalNews } from '../../types/externalNews';
+import type { OfficialAnnouncement } from '../../types/officialAnnouncement';
 import { MegaphoneIcon, NewsIcon } from '../dashboard/icons';
-
-// Temporary presentation content — replace with real API-backed announcements later.
-const ANNOUNCEMENT_ITEMS = [
-  { category: 'Roads', title: 'Temporary road closure on Elm Street', date: 'Sep 17, 2026' },
-  { category: 'Utilities', title: 'Scheduled water supply maintenance', date: 'Sep 15, 2026' },
-  { category: 'Community', title: 'Public city event this weekend', date: 'Sep 12, 2026' },
-];
 
 function formatDate(isoDate: string): string {
   return new Date(isoDate).toLocaleDateString('en-US', {
@@ -62,10 +57,38 @@ function NewsCard({ item }: { item: ExternalNews }) {
   return <article className="news-card">{content}</article>;
 }
 
+function AnnouncementCard({ item }: { item: OfficialAnnouncement }) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const showImage = Boolean(item.image_url) && !imageFailed;
+
+  return (
+    <article className="news-card">
+      <div className="news-card__image news-card__image--accent">
+        {showImage ? (
+          <img
+            src={item.image_url ?? undefined}
+            alt={item.title}
+            className="news-card__image-img"
+            onError={() => setImageFailed(true)}
+          />
+        ) : (
+          <MegaphoneIcon size={22} />
+        )}
+      </div>
+      {item.is_pinned && <span className="news-card__pinned">Pinned</span>}
+      <span className="news-card__category">{item.category}</span>
+      <h3>{item.title}</h3>
+      <p>{formatDate(item.inserted_at)}</p>
+    </article>
+  );
+}
+
 function NewsPreview() {
   const navigate = useNavigate();
   const { news, isLoading, error } = useExternalNews();
   const latestNews = news.slice(0, 3);
+  const { announcements, isLoading: isAnnouncementsLoading, error: announcementsError } = useOfficialAnnouncements();
+  const latestAnnouncements = announcements.slice(0, 3);
 
   return (
     <section id="news" className="news-preview">
@@ -98,22 +121,27 @@ function NewsPreview() {
       <div className="news-preview__group">
         <div className="news-preview__header">
           <h2>Official Announcements</h2>
-          <button type="button" onClick={() => navigate('/official-announcements')}>
+          <button type="button" onClick={() => navigate('/announcements')}>
             View all announcements →
           </button>
         </div>
-        <div className="news-preview__grid">
-          {ANNOUNCEMENT_ITEMS.map((item) => (
-            <article className="news-card" key={item.title}>
-              <div className="news-card__image news-card__image--accent">
-                <MegaphoneIcon size={22} />
-              </div>
-              <span className="news-card__category">{item.category}</span>
-              <h3>{item.title}</h3>
-              <p>{item.date}</p>
-            </article>
-          ))}
-        </div>
+        {isAnnouncementsLoading ? (
+          <div className="news-preview__grid">
+            {[0, 1, 2].map((placeholder) => (
+              <div className="news-card news-card--skeleton" key={placeholder} />
+            ))}
+          </div>
+        ) : announcementsError ? (
+          <p className="news-preview__status">Unable to load announcements right now.</p>
+        ) : latestAnnouncements.length === 0 ? (
+          <p className="news-preview__status">No announcements available at the moment.</p>
+        ) : (
+          <div className="news-preview__grid">
+            {latestAnnouncements.map((item) => (
+              <AnnouncementCard item={item} key={item.id} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
